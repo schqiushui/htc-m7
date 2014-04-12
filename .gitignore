@@ -88,6 +88,7 @@ GTAGS
 #user ignores
 ge442mkzip.sh
 out/
+nuc/
 out_sense/
 ramfs/
 sense442mkzip.sh

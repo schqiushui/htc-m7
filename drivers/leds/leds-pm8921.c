@@ -26,6 +26,9 @@
 #include <linux/mfd/pm8xxx/core.h>
 #include <linux/mfd/pm8xxx/pwm.h>
 #include <linux/leds-pm8921.h>
+#ifdef CONFIG_TOUCHSCREEN_SYNAPTICS_SWEEP2WAKE
+#include <linux/synaptics_i2c_rmi.h>
+#endif
 
 #include <linux/input.h>
 #include <linux/synaptics_i2c_rmi.h>

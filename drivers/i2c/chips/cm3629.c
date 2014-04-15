@@ -2535,11 +2535,9 @@ int power_key_check_in_pocket(void)
 	int ls_level = 0;
 	int i;
 	uint8_t ps1_adc = 0;
-#if 0
 	uint8_t ps2_adc = 0;
 	int ret = 0;
 
-#endif
 	if (!is_probe_success) {
 		D("[cm3629] %s return by cm3629 probe fail\n", __func__);
 		return 0;

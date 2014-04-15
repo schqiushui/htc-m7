@@ -2949,8 +2949,34 @@ int smb349_is_batt_charge_enable(void)
 		return 1;
 }
 EXPORT_SYMBOL(smb349_is_batt_charge_enable);
+/*
+#ifdef CONFIG_DUTY_CYCLE_LIMIT
+int smb349_limit_charge_enable(int chg_limit_reason, int chg_limit_timer_sub_mask, int limit_charge_timer_ma);
+{
+	pr_info("chg_limit_reason=%d, chg_limit_timer_sub_mask=%d, limit_charge_timer_ma=%d\n",
+		chg_limit_reason, chg_limit_timer_sub_mask, limit_charge_timer_ma);
 
+	if (!the_chip) {
+		pr_err("called before init\n");
+		return -EINVAL;
+	}
 
+	
+	if (limit_charge_timer_ma != 0 && !!(chg_limit_reason & chg_limit_timer_sub_mask))
+		chg_limit_current = limit_charge_timer_ma;
+	else {
+		if (!!chg_limit_reason)
+			chg_limit_current = PM8921_CHG_I_MIN_MA;
+		else
+			chg_limit_current = 0;
+	}
+
+	pr_info("%s:chg_limit_current = %d\n", __func__, chg_limit_current);
+	set_appropriate_battery_current(the_chip);
+	return 0;
+}
+#else
+*/
 int smb349_limit_charge_enable(bool enable)
 {
 	int ret = 0;
@@ -2972,7 +2998,7 @@ int smb349_limit_charge_enable(bool enable)
 }
 EXPORT_SYMBOL(smb349_limit_charge_enable);
 
-
+//#endif
 static void smb_state_check_worker(struct work_struct *w)
 {
 

@@ -1024,6 +1024,9 @@ static struct htc_battery_platform_data htc_battery_pdev_data = {
 	.chg_limit_active_mask = HTC_BATT_CHG_LIMIT_BIT_TALK |
 								HTC_BATT_CHG_LIMIT_BIT_NAVI |
 								HTC_BATT_CHG_LIMIT_BIT_THRML,
+#ifdef CONFIG_DUTY_CYCLE_LIMIT
+	.chg_limit_timer_sub_mask = HTC_BATT_CHG_LIMIT_BIT_THRML,
+#endif
 	.critical_low_voltage_mv = 3100,
 	.critical_alarm_vol_ptr = critical_alarm_voltage_mv,
 	.critical_alarm_vol_cols = sizeof(critical_alarm_voltage_mv) / sizeof(int),
@@ -1155,12 +1158,12 @@ static struct sf_lut rbatt_est_ocv_id_1 = {
 };
 
 static struct sf_lut rbatt_sf_id_1 = {
-	.rows		= 19,
-        .cols           = 7,
+	.rows        = 19,
+	.cols        = 7,
 	
-        .row_entries            = {-20,-10, 0, 10, 20, 30, 40},
-        .percent        = {100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10},
-        .sf                     = {
+	.row_entries = {-20,-10, 0, 10, 20, 30, 40},
+	.percent     = {100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10},
+	.sf          = {
                                         {183,167,155,138,113,85,55,},
                                         {183,167,155,138,113,85,55,},
                                         {183,167,155,138,113,85,55,},
@@ -1268,12 +1271,12 @@ static struct sf_lut rbatt_est_ocv_id_2 = {
 };
 
 static struct sf_lut rbatt_sf_id_2 = {
-	.rows		= 19,
-        .cols           = 7,
+	.rows        = 19,
+	.cols        = 7,
 	
-        .row_entries            = {-20,-10, 0, 10, 20, 30, 40},
-        .percent        = {100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10},
-        .sf                     = {
+	.row_entries = {-20,-10, 0, 10, 20, 30, 40},
+	.percent     = {100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10},
+	.sf          = {
                                         {224,210,195,174,100,91,85,},
                                         {224,210,195,174,100,91,85,},
                                         {224,210,195,174,100,91,85,},
@@ -2161,7 +2164,7 @@ static struct platform_device htc_headset_pmic = {
 static struct htc_headset_1wire_platform_data htc_headset_1wire_data = {
 	.tx_level_shift_en	= PM8921_GPIO_PM_TO_SYS(AUD_UART_OEz),
 	.uart_sw		= 0,
-	.one_wire_remote	={0x7E, 0x7F, 0x7D, 0x7F, 0x7B, 0x7F},
+	.one_wire_remote	= {0x7E, 0x7F, 0x7D, 0x7F, 0x7B, 0x7F},
 	.remote_press		= 0,
 	.onewire_tty_dev	= "/dev/ttyHSL3",
 };
@@ -3067,13 +3070,13 @@ static int deluxe_j_gyro_power_LPM(int on)
 }
 
 static struct r3gd20_gyr_platform_data gyro_platform_data = {
-	.fs_range = R3GD20_GYR_FS_2000DPS,
-	.axis_map_x = 0,
-	.axis_map_y = 1,
-	.axis_map_z = 2,
-	.negate_x = 1,
-	.negate_y = 0,
-	.negate_z = 1,
+       .fs_range = R3GD20_GYR_FS_2000DPS,
+       .axis_map_x = 0,
+       .axis_map_y = 1,
+       .axis_map_z = 2,
+       .negate_x = 1,
+       .negate_y = 0,
+       .negate_z = 1,
 
        .poll_interval = 50,
        .min_interval = R3GD20_MIN_POLL_PERIOD_MS, 
@@ -3180,7 +3183,7 @@ static struct cm3629_platform_data cm36282_pdata = {
 	.ps1_thd_set = 0x15,
 	.ps1_thd_no_cal = 0xF1,
 	.ps1_thd_with_cal = 0xD,
-	.ps_th_add = 5,
+	.ps_th_add = 10,
 	.ps_calibration_rule = 1,
 	.ps_conf1_val = CM3629_PS_DR_1_40 | CM3629_PS_IT_1_6T |
 			CM3629_PS1_PERS_2,
@@ -3580,8 +3583,8 @@ static struct mdm_platform_data mdm_platform_data = {
 static struct tsens_platform_data apq_tsens_pdata  = {
 		.tsens_factor		= 1000,
 		.hw_type		= APQ_8064,
-                .patherm0               = -1,
-                .patherm1               = -1,
+		.patherm0               = -1,
+		.patherm1               = -1,
 		.tsens_num_sensor	= 11,
 		.slope = {1176, 1176, 1154, 1176, 1111,
 			1132, 1132, 1199, 1132, 1199, 1132},
@@ -4396,22 +4399,6 @@ static struct platform_device vibrator_pwm_device = {
 	.platform_data	= &pm8xxx_vib_pwm_pdata,
 	},
 };
-static struct pm8xxx_vibrator_pwm_platform_data pm8xxx_vib_pwm_pdata_XC = {
-    .initial_vibrate_ms = 0,
-    .max_timeout_ms = 15000,
-	.duty_us = 35,
-	.PERIOD_US = 38,
-	.bank = PM8XXX_ID_GPIO26,
-    .ena_gpio = PM8921_GPIO_PM_TO_SYS(HAPTIC_EN),
-    .set_vdd_power = haptic_set_vdd,
-};
-static struct platform_device vibrator_pwm_device_XC = {
-    .name = PM8XXX_VIBRATOR_PWM_DEV_NAME,
-    .dev = {
-		.platform_data  = &pm8xxx_vib_pwm_pdata_XC,
-	},
-};
-
 
 static struct ramdump_platform_data ramdump_data_2G = {
 	.count = 1,
@@ -4793,6 +4780,11 @@ static struct platform_device cdp_kp_pdev = {
 	.dev            = {
 		.platform_data  = &cdp_keys_data,
 	},
+};
+
+static struct platform_device msm_dev_avtimer_device = {
+	.name = "dev_avtimer",
+	.dev = { .platform_data = &dev_avtimer_pdata },
 };
 
 #define DSPS_PIL_GENERIC_NAME          "dsps"
@@ -5296,8 +5288,8 @@ static void deluxe_j_init_1seg(void)
 
 #ifdef CONFIG_SERIAL_IRDA
 static uint32_t msm_uart_gsbi3_gpio[] = {
-	GPIO_CFG(SIR_TX, 1, GPIO_CFG_OUTPUT, GPIO_CFG_NO_PULL, GPIO_CFG_8MA),
-	GPIO_CFG(SIR_RX, 1, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_8MA),
+	GPIO_CFG(SIR_TX, 1, GPIO_CFG_OUTPUT, GPIO_CFG_NO_PULL, GPIO_CFG_4MA),
+	GPIO_CFG(SIR_RX, 1, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_4MA),
 };
 static void msm_uart_gsbi3_gpio_init(void)
 {
@@ -5418,10 +5410,15 @@ static void __init deluxe_j_common_init(void)
 
 	
 #ifdef CONFIG_SMB349_CHARGER
-	smb349_data.chip_rev = SMB_349;
+	if(system_rev < XD)
+		smb349_data.chip_rev = SMB_349;
+	else
+		smb349_data.chip_rev = SMB_340;
+
 	smb349_data.aicl_result_threshold = AICL_RESULT_1600MA;
 	smb349_data.dc_input_max = DC_INPUT_1700MA;
 	smb349_data.aicl_on = AICL_ENABLE;
+	pr_info("sch: device use smb34x charger\n");
 #endif
 
 	register_i2c_devices();
@@ -5440,11 +5437,7 @@ static void __init deluxe_j_common_init(void)
 #endif 
 
 	platform_add_devices(common_devices, ARRAY_SIZE(common_devices));
-
-	if (system_rev < XC )
-		platform_device_register(&vibrator_pwm_device);
-	else
-              platform_device_register(&vibrator_pwm_device_XC);
+	platform_device_register(&vibrator_pwm_device);
 
 	if(board_mfg_mode() == 9) {
 		if (board_fullramdump_flag())
@@ -5512,16 +5505,20 @@ static void __init deluxe_j_common_init(void)
 #ifdef CONFIG_SUPPORT_USB_SPEAKER
 	pm_qos_add_request(&pm_qos_req_dma, PM_QOS_CPU_DMA_LATENCY, PM_QOS_DEFAULT_VALUE);
 #endif
-	if (get_kernel_flag() & KERNEL_FLAG_PM_MONITOR) {
+#if 1 
+	if ((get_kernel_flag() & KERNEL_FLAG_PM_MONITOR) ||
+		(!(get_kernel_flag() & KERNEL_FLAG_TEST_PWR_SUPPLY) && (!get_tamper_sf()))) {
 		htc_monitor_init();
 		htc_pm_monitor_init();
 	}
+#endif
 
+	platform_device_register(&msm_dev_avtimer_device);
 }
-
+/*
 unsigned long ion_kgsl_heap_vaddr = 0;
 unsigned long ion_kgsl_heap_paddr = 0;
-
+*/
 static void __init deluxe_j_allocate_memory_regions(void)
 {
 #ifdef CONFIG_KEXEC_HARDBOOT

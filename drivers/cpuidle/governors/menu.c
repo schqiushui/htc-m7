@@ -37,6 +37,13 @@ static DEFINE_PER_CPU(int, hrtimer_status);
 enum {MENU_HRTIMER_STOP, MENU_HRTIMER_REPEAT, MENU_HRTIMER_GENERAL};
 
 
+/*
+ * The C-state residency is so long that is is worthwhile to exit
+ * from the shallow C-state and re-enter into a deeper C-state.
+ */
+static unsigned int perfect_cstate_ms __read_mostly = 30;
+module_param(perfect_cstate_ms, uint, 0000);
+
 struct menu_device {
 	int		last_state_idx;
 	int             needs_update;
@@ -112,6 +119,16 @@ EXPORT_SYMBOL_GPL(menu_hrtimer_cancel);
 static enum hrtimer_restart menu_hrtimer_notify(struct hrtimer *hrtimer)
 {
 	int cpu = smp_processor_id();
+	struct menu_device *data = &per_cpu(menu_devices, cpu);
+
+	/* In general case, the expected residency is much larger than
+	 *  deepest C-state target residency, but prediction logic still
+	 *  predicts a small predicted residency, so the prediction
+	 *  history is totally broken if the timer is triggered.
+	 *  So reset the correction factor.
+	 */
+	if (per_cpu(hrtimer_status, cpu) == MENU_HRTIMER_GENERAL)
+		data->correction_factor[data->bucket] = RESOLUTION * DECAY;
 
 	per_cpu(hrtimer_status, cpu) = MENU_HRTIMER_STOP;
 

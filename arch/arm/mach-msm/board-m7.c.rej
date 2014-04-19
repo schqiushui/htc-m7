@@ -1,0 +1,29 @@
+--- arch/arm/mach-msm/board-m7.c
++++ arch/arm/mach-msm/board-m7.c
+@@ -1513,14 +1513,14 @@
+        {
+                .src = MSM_BUS_MASTER_SPS,
+                .dst = MSM_BUS_SLAVE_EBI_CH0,
+-               .ab = 60000000,         
+-               .ib = 960000000,        
++               .ab = 60000000,		/* At least 480Mbps on bus. */
++	       .ib = 960000000,		/* MAX bursts rate */      
+        },
+        {
+                .src = MSM_BUS_MASTER_SPS,
+                .dst = MSM_BUS_SLAVE_SPS,
+                .ab = 0,
+-               .ib = 512000000, 
++               .ib = 512000000, /*vote for 64Mhz dfab clk rate*/
+        },
+ };
+ 
+@@ -4038,7 +4038,7 @@
+ static struct msm_thermal_data msm_thermal_pdata = {
+ 	.sensor_id = 0,
+ 	.poll_ms = 1000,
+-	.limit_temp = 51,
++	.limit_temp = 60,
+ 	.temp_hysteresis = 10,
+ 	.limit_freq = 918000,
+ };

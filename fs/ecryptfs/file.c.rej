@@ -1,0 +1,13 @@
+--- fs/ecryptfs/file.c
++++ fs/ecryptfs/file.c
+@@ -52,6 +62,10 @@
+ 	struct file *file = iocb->ki_filp;
+ 
+ 	rc = generic_file_aio_read(iocb, iov, nr_segs, pos);
++	/*
++	 * Even though this is a async interface, we need to wait
++	 * for IO to finish to update atime
++	 */
+ 	if (-EIOCBQUEUED == rc)
+ 		rc = wait_on_sync_kiocb(iocb);
+ 	if (rc >= 0) {

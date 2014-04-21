@@ -193,14 +193,6 @@ static int inode_alloc_security(struct inode *inode)
 	return 0;
 }
 
-static void inode_free_rcu(struct rcu_head *head)
-{
-	struct inode_security_struct *isec;
-
-	isec = container_of(head, struct inode_security_struct, rcu);
-	kmem_cache_free(sel_inode_cache, isec);
-}
-
 static void inode_free_security(struct inode *inode)
 {
 	struct inode_security_struct *isec = inode->i_security;
@@ -2832,6 +2824,9 @@ static int selinux_file_permission(struct file *file, int mask)
 
 	if (!mask)
 		
+		return 0;
+
+	if (unlikely(!fsec || !isec))
 		return 0;
 
 	if (sid == fsec->sid && fsec->isid == isec->sid &&

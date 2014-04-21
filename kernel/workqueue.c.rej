@@ -1,22 +1,18 @@
 --- kernel/workqueue.c
 +++ kernel/workqueue.c
-@@ -1037,12 +1037,19 @@
- 	if (worker->flags & WORKER_IDLE)
- 		gcwq->nr_idle--;
+@@ -1354,6 +1354,15 @@
+ 		dump_stack();
+ 	}
  
 +	/*
-+	 * Once WORKER_DIE is set, the kworker may destroy itself at any
-+	 * point.  Pin to ensure the task stays until we're done with it.
++	 * The following prevents a kworker from hogging CPU on !PREEMPT
++	 * kernels, where a requeueing work item waiting for something to
++	 * happen could deadlock with stop_machine as such work item could
++	 * indefinitely requeue itself while all other CPUs are trapped in
++	 * stop_machine.
 +	 */
-+	get_task_struct(worker->task);
++	cond_resched();
 +
- 	list_del_init(&worker->entry);
- 	worker->flags |= WORKER_DIE;
- 
- 	spin_unlock_irq(&gcwq->lock);
- 
- 	kthread_stop(worker->task);
-+	put_task_struct(worker->task);
- 	kfree(worker);
- 
  	spin_lock_irq(&gcwq->lock);
+ 
+ 	

@@ -171,6 +171,10 @@ void tcp_select_initial_window(int __space, __u32 mss,
 	}
 
 	
+	/* Lock the initial TCP window size to 64K*/
+	*rcv_wnd = 64240;
+
+	/* Set the clamp no higher than max representable value */
 	(*window_clamp) = min(65535U << (*rcv_wscale), *window_clamp);
 }
 EXPORT_SYMBOL(tcp_select_initial_window);
@@ -1562,7 +1566,7 @@ static int tcp_mtu_probe(struct sock *sk)
 	return -1;
 }
 
-static int tcp_write_xmit(struct sock *sk, unsigned int mss_now, int nonagle,
+static bool tcp_write_xmit(struct sock *sk, unsigned int mss_now, int nonagle,
 			  int push_one, gfp_t gfp)
 {
 	struct tcp_sock *tp = tcp_sk(sk);

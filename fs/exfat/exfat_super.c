@@ -2063,6 +2063,7 @@ enum {
 	Opt_err_cont,
 	Opt_err_panic,
 	Opt_err_ro,
+	Opt_htc_hack,
 	Opt_err,
 #ifdef CONFIG_EXFAT_DISCARD
 	Opt_discard,
@@ -2083,6 +2084,7 @@ static const match_table_t exfat_tokens = {
 	{Opt_err_cont, "errors=continue"},
 	{Opt_err_panic, "errors=panic"},
 	{Opt_err_ro, "errors=remount-ro"},
+	{Opt_htc_hack, "utf8"},
 #ifdef CONFIG_EXFAT_DISCARD
 	{Opt_discard, "discard"},
 #endif /* CONFIG_EXFAT_DISCARD */
